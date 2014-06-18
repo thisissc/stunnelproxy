@@ -1,12 +1,19 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import argparse
 import asyncio
 import socket
 import ssl
 import urllib.parse
-import settings
 
+def init_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--port', type=int, default=8081)
+    parser.add_argument('--cert', type=str, default='')
+    return parser.parse_args()
+
+args = init_args()
 
 class HeaderLinePaser:
     def __init__(self, line):
@@ -65,10 +72,10 @@ def main():
     loop = asyncio.get_event_loop()
 
     ssl_ctx = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
-    ssl_ctx.load_cert_chain(certfile=settings.remote['certfile'])
+    ssl_ctx.load_cert_chain(certfile=args.cert)
     ssl_ctx.check_hostname = False
 
-    coro = asyncio.start_server(handle_stream, port=settings.remote['port'], ssl=ssl_ctx)
+    coro = asyncio.start_server(handle_stream, port=args.port, ssl=ssl_ctx)
     server = loop.run_until_complete(coro)
     try:
         loop.run_forever()
