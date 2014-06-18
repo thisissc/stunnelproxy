@@ -8,7 +8,9 @@ import ssl
 def init_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--port', type=int, default=8080)
+    parser.add_argument('--ca', type=str, default='')
     parser.add_argument('--cert', type=str, default='')
+    parser.add_argument('--certkey', type=str, default=None)
     parser.add_argument('--r_hostname', type=str, default='localhost')
     parser.add_argument('--r_host', type=str, default='127.0.0.1')
     parser.add_argument('--r_port', type=int, default=8081)
@@ -30,11 +32,12 @@ def forward(src, desc):
 @asyncio.coroutine
 def handle_stream(client_r, client_w):
     ssl_ctx = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
-    ssl_ctx.verify_mode = ssl.CERT_REQUIRED
-    ssl_ctx.load_verify_locations(args.cert)
-    ssl_ctx.check_hostname = False
+    ssl_ctx.verify_mode = ssl.CERT_OPTIONAL
+    ssl_ctx.load_verify_locations(cafile=args.ca)
+    ssl_ctx.load_cert_chain(certfile=args.cert, keyfile=args.certkey)
+    ssl_ctx.check_hostname = True
 
-    target_r, target_w = yield from asyncio.open_connection(args.r_host, args.r_port, ssl=ssl_ctx)
+    target_r, target_w = yield from asyncio.open_connection(args.r_host, args.r_port, ssl=ssl_ctx, server_hostname=args.r_hostname)
     tasks = [
         forward(client_r, target_w),
         forward(target_r, client_w),

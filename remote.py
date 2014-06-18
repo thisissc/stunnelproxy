@@ -10,7 +10,9 @@ import urllib.parse
 def init_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--port', type=int, default=8081)
+    parser.add_argument('--ca', type=str, default='')
     parser.add_argument('--cert', type=str, default='')
+    parser.add_argument('--certkey', type=str, default=None)
     return parser.parse_args()
 
 args = init_args()
@@ -19,7 +21,6 @@ class HeaderLinePaser:
     def __init__(self, line):
         if isinstance(line, bytes):
             line = line.decode('utf-8')
-        print(line)
 
         self.method, self.url, self.protocol = line.split()
         s_data = urllib.parse.urlsplit(self.url)
@@ -72,7 +73,9 @@ def main():
     loop = asyncio.get_event_loop()
 
     ssl_ctx = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
-    ssl_ctx.load_cert_chain(certfile=args.cert)
+    ssl_ctx.verify_mode = ssl.CERT_REQUIRED
+    ssl_ctx.load_verify_locations(cafile=args.ca)
+    ssl_ctx.load_cert_chain(certfile=args.cert, keyfile=args.certkey)
     ssl_ctx.check_hostname = False
 
     coro = asyncio.start_server(handle_stream, port=args.port, ssl=ssl_ctx)
