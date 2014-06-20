@@ -9,9 +9,11 @@ function FindProxyForURL(url, host) {
         shExpMatch(host, 'localhost.*')) {
         return defaultproxy;
     } else if (shExpMatch(host, '*.google*.*') ||
+                shExpMatch(host, '*.blogspot.*') ||
                 dnsDomainIs(host, '.ggpht.com') ||
                 dnsDomainIs(host, '.wikipedia.org') ||
                 dnsDomainIs(host, '.sourceforge.net') ||
+                dnsDomainIs(host, '.wordpress.com') ||
                 dnsDomainIs(host, '.sf.net') ||
                 host == 'sourceforge.net' ||
                 host == 'cdnjs.cloudflare.com' ||

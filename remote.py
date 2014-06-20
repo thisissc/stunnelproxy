@@ -17,6 +17,7 @@ def init_args():
 
 args = init_args()
 
+
 class HeaderLinePaser:
     def __init__(self, line):
         if isinstance(line, bytes):
