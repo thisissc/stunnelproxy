@@ -1,5 +1,5 @@
 function FindProxyForURL(url, host) {
-    var autoproxy = 'PROXY 127.0.0.1:8080';
+    var autoproxy = 'PROXY {hostname}:8080';
     var defaultproxy = 'DIRECT';
 
     if (isPlainHostName(host) ||

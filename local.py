@@ -67,6 +67,9 @@ def handle_http_request(client_r, client_w):
         body = f.read()
         f.close()
 
+        _my_addr = client_w.get_extra_info('socket').getsockname()[0]
+        body = body.replace('{hostname}', _my_addr)
+
         resp_data = [
             b'HTTP/1.1 200 OK\r\n',
             'Content-Length: {}\r\n'.format(len(body)).encode('utf-8'),
