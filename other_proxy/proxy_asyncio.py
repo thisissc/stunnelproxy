@@ -15,11 +15,18 @@ class HeaderLinePaser:
 
         self.method, self.url, self.protocol = line.split()
         s_data = urllib.parse.urlsplit(self.url)
-        self.url = s_data.netloc or s_data.path
-        _addr = self.url.split(':')
+        _addr = s_data.netloc or s_data.path
+        _addr = _addr.split(':')
         self.hostname, self.port = len(_addr) == 2 and  _addr or (_addr[0], 80)
         self.port = int(self.port)
         self.host = socket.gethostbyname(self.hostname)
+
+        if self.host == '192.168.1.131':
+            self.url = self.url.replace(self.hostname, 'api.hoto.cn')
+            self.host = '127.0.0.1'
+
+    def __str__(self):
+        return '{} {} {}\n'.format(self.method, self.url, self.protocol)
 
 
 @asyncio.coroutine
@@ -48,7 +55,7 @@ def handle_stream(client_r, client_w):
         client_w.write(b'HTTP/1.1 200 Connection established\r\nConnection: close\r\n\r\n')
     else:
         target_r, target_w = yield from asyncio.open_connection(parsed.host, parsed.port)
-        target_w.write(line)
+        target_w.write(str(parsed).encode('utf-8'))
 
     tasks = [
         forward(client_r, target_w),
@@ -62,7 +69,7 @@ def handle_stream(client_r, client_w):
 
 def main():
     loop = asyncio.get_event_loop()
-    coro = asyncio.start_server(handle_stream, port=8080)
+    coro = asyncio.start_server(handle_stream, port=11122)
     server = loop.run_until_complete(coro)
     try:
         loop.run_forever()
