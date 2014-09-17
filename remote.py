@@ -35,7 +35,7 @@ class HeaderLinePaser:
 @asyncio.coroutine
 def forward(src, desc):
     while 1:
-        data = yield from src.read(1)
+        data = yield from src.read(1024)
         
         if data:
             desc.write(data)
@@ -55,7 +55,7 @@ def handle_stream(client_r, client_w):
                 break
 
         target_r, target_w = yield from asyncio.open_connection(parsed.host, parsed.port)
-        client_w.write(b'HTTP/1.1 200 Connection established\r\nConnection: close\r\n\r\n')
+        client_w.write(b'HTTP/1.1 200 Connection Established\r\n\r\n')
     else:
         target_r, target_w = yield from asyncio.open_connection(parsed.host, parsed.port)
         target_w.write(line)

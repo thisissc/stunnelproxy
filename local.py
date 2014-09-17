@@ -22,7 +22,7 @@ args = init_args()
 @asyncio.coroutine
 def forward(src, desc):
     while 1:
-        data = yield from src.read(1)
+        data = yield from src.read(1024)
         
         if data:
             desc.write(data)
