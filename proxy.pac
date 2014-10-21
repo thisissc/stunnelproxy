@@ -11,6 +11,7 @@ function FindProxyForURL(url, host) {
     } else if (shExpMatch(host, '*.google*.*') ||
                 shExpMatch(host, '*.blogspot.*') ||
                 dnsDomainIs(host, '.ggpht.com') ||
+                dnsDomainIs(host, '.chrome.com') ||
                 dnsDomainIs(host, '.gstatic.com') ||
                 dnsDomainIs(host, '.wikipedia.org') ||
                 dnsDomainIs(host, '.sourceforge.net') ||
